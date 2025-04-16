@@ -23,7 +23,7 @@
 <template>  
     <div class="body w-screen flex justify-center items-center h-screen bg-linear-to-r/hsl from-indigo-500 to-teal-400 m-0">
         <div class="container grid grid-cols-1 lg:grid-cols-2 gap-2 bg-white rounded-lg w-6xl shadow-xl">
-                    <div class="form-login p-15">
+            <div class="form-login p-15">
                 <form class="space-y-6 lg:w-lg w-full" action="#" @submit.prevent="login">
                     <h5 class="text-xl font-medium text-gray-900">Sign in to absensi</h5>
                     <div>
