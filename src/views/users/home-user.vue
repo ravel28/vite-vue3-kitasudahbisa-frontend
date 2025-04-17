@@ -1,15 +1,12 @@
 <script setup>
   import { useRoute } from 'vue-router'
 
+  // declaration variable of meta
   const route = useRoute()
-
-  console.log(route)
-
-  // const pageTitle = route.meta.title
-  const pageTitle = "Welcome to kita sudah bisa"
+  const pageTitle = route.meta.title
 </script>
 <template>
-  <div class="">
-    <h3 class="text-3xl font-extrabold">{{ pageTitle }}</h3>
+  <div class="py-4">
+    <h3 class="text-xl font-bold">{{ pageTitle }}</h3>
   </div>
 </template>

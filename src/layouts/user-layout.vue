@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col ">
 
     <!-- Header -->
     <div class="sm:hidden">
@@ -17,14 +17,9 @@
         <SidebarUserLayout />
       </aside>
 
-      <main class="w-5/6 p-4">
+      <main class="w-6/6 p-4 bg-blue-100 px-7">
         <router-view />
       </main>
     </div>
-
-    <!-- Footer -->
-    <footer class="bg-gray-100 py-2">
-      <p>&copy; KitaSudahBisaVuejs2025</p>
-    </footer>
   </div>
 </template>

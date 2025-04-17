@@ -16,7 +16,7 @@ const routes = [
         name: 'Layout',
         component: () => import('@/views/users/home-user.vue'),
         meta : {
-          title: 'Welcome to kita sudah bisa'
+          title: 'Home'
         }
       },
     ],
