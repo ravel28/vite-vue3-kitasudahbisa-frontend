@@ -16,7 +16,8 @@ const routes = [
         name: 'Layout',
         component: () => import('@/views/users/home-user.vue'),
         meta : {
-          title: 'Home'
+          title: 'Dashboard',
+          navigation: 'Dashboard'
         }
       },
     ],

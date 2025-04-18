@@ -1,9 +1,8 @@
+import './style.css';
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router/';
-import './style.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { UserIcon } from '@heroicons/vue/24/solid';
 
 createApp(App)
   .use(router)

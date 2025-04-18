@@ -6,18 +6,18 @@ const route = useRoute();
 const isActive = (path) => {
   return route.path === path;
 };
+
+document.title = route.meta.title; 
 </script>
 
 <template>
+    <title>{{ title }}</title>
     <div class="side-bar-user">
         <ul class="">
-            <li class="p-5  font-bold text-2xl py-7 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                    <path fill-rule="evenodd" d="M14.447 3.026a.75.75 0 0 1 .527.921l-4.5 16.5a.75.75 0 0 1-1.448-.394l4.5-16.5a.75.75 0 0 1 .921-.527ZM16.72 6.22a.75.75 0 0 1 1.06 0l5.25 5.25a.75.75 0 0 1 0 1.06l-5.25 5.25a.75.75 0 1 1-1.06-1.06L21.44 12l-4.72-4.72a.75.75 0 0 1 0-1.06Zm-9.44 0a.75.75 0 0 1 0 1.06L2.56 12l4.72 4.72a.75.75 0 0 1-1.06 1.06L.97 12.53a.75.75 0 0 1 0-1.06l5.25-5.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-                </svg>
-                <p class='mx-2'>KSB</p>
+            <li class="font-bold text-2xl flex items-center">
+                <h1 class="dancing-script-regular text-2xl p-2 py-6">KitaSudahBisa.com</h1>
             </li>
-            <li :class="[ isActive('/users') ? 'bg-blue-500 text-white ' : 'text-gray-700']">
+            <li :class="[ isActive('/users') ? 'bg-blue-500 text-white rounded-lg' : 'text-gray-700']">
                 <router-link to="/users" class = 'flex p-4'>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                         <path d="M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z" />
@@ -41,3 +41,24 @@ const isActive = (path) => {
       <p>&copy; KitaSudahBisaVuejs2025</p>
     </div>
 </template>
+
+<style scoped>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+    
+    /* Kelas untuk font dengan berat 400 (regular) */
+    .dancing-script-regular {
+        font-family: "Dancing Script", cursive;
+        font-weight: 400;
+        font-optical-sizing: auto;
+        font-style: normal;
+        font-size: 30px;
+    }
+
+    /* Kelas untuk font dengan berat 700 (bold) */
+    .dancing-script-bold {
+        font-family: "Dancing Script", cursive;
+        font-weight: 700;
+        font-optical-sizing: auto;
+        font-style: normal;
+    }
+</style>
