@@ -22,10 +22,11 @@
 
 <template>  
     <div class="body w-screen flex justify-center items-center h-screen bg-linear-to-r/hsl from-indigo-500 to-teal-400 m-0">
-        <div class="container grid grid-cols-1 lg:grid-cols-2 gap-2 bg-white rounded-lg w-6xl shadow-xl">
+        <div class="container block bg-white rounded-lg w-lg shadow-4xl">
             <div class="form-login p-15">
-                <form class="space-y-6 lg:w-lg w-full" action="#" @submit.prevent="login">
-                    <h5 class="text-xl font-medium text-gray-900">Sign in to absensi</h5>
+                <form class="space-y-6 w-full" action="#" @submit.prevent="login">
+                    <!-- <h5 class="text-xl font-medium text-gray-900">Sign in to absensi</h5> -->
+                    <h5 class="text-xl dancing-script-regular text-gray-900">KitaSudahBisa.com</h5>
                     <div>
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
                         <input type="email" name="email" id="email" class="border border-gray-300 text-sm rounded-lg block w-full p-2.5" placeholder="name@gmail.com" required v-model="formLogin.user"/>
@@ -40,19 +41,22 @@
                     </div>
                 </form>                
             </div>
-            <div class="catalog p-6 hidden lg:flex items-center justify-center">
-                <div class="catalog-info">
-                    <h1 class="mb-4 font-extrabold tracking-tight text-gray-500 md:text-3xl lg:text-3xl text-center">Kita  Sudah Bisa 🧑‍💻</h1>
-                </div>
-            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-@media (max-width: 999px) {
-    .container {
-        width: 80%;
+    @media (max-width: 800px) {
+        .container {
+            width: 80%;
+        }
     }
-}
+
+    .dancing-script-regular {
+        font-family: "Dancing Script", cursive;
+        font-weight: 400;
+        font-optical-sizing: auto;
+        font-style: normal;
+        font-size: 30px;
+    }
 </style>
