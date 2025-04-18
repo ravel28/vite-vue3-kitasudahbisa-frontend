@@ -12,12 +12,12 @@
     </div>
 
     <!-- Main layout -->
-    <div class="flex flex-1">
-      <aside class="w-1/6">
+    <div class="flex min-h-screen">
+      <aside class="w-sm">
         <SidebarUserLayout />
       </aside>
 
-      <main class="w-6/6 p-4 bg-blue-100 px-7">
+      <main class="w-full p-4 bg-blue-100 px-7">
         <router-view />
       </main>
     </div>
