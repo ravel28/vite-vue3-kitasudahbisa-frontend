@@ -13,13 +13,24 @@ const routes = [
     children: [
       {
         path: '',
-        name: 'Layout',
+        name: 'user info',
         component: () => import('@/views/users/home-user.vue'),
         meta : {
           title: 'Dashboard',
-          navigation: 'Dashboard'
+          navigation: 'Dashboard',
+          tableName: 'List User'
         }
       },
+      {
+        path: 'divisi',
+        name: 'divisi info',
+        component: () => import('@/views/users/home-user.vue'),
+        meta : {
+          title: 'Divisions',
+          navigation: 'Dashboard',
+          tableName: 'List Divisi'
+        }
+      }
     ],
   }
 ];
