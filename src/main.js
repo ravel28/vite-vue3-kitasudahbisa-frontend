@@ -3,9 +3,11 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router/';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import SweetAlertPlugin from './assets/sweet-alert/sweetalert';
 
 createApp(App)
   .use(router)
+  .use(SweetAlertPlugin)
   .mount('#app');
 
   console.log(

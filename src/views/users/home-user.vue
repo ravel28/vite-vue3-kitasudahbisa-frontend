@@ -5,7 +5,7 @@ import axios from 'axios'
 
 // declaration variable of meta
 const readerPath = useRoute()
-const cahngeRoute = useRouter()
+const changeRoute = useRouter()
 const pageTitle = computed(() => route.meta.title);
 const listName = computed(() => route.meta.tableName);
 
@@ -30,19 +30,9 @@ onMounted(async () => {
 async function getDataDetailUser(idUser) {
   const getDetailUser = await axios.get(api + '/users/finding/' + idUser)
   detailUsers.value = getDetailUser.data.data.item
-  cahngeRoute.push(`/users/edit/${idUser}`)
+  changeRoute.push(`/users/edit/${idUser}`)
 }
 
-async function deleteDatauser(idUser) {
-  if (confirm('Apakah kamu yakin mau menghapus data ini?')) {
-    console.log('data yang akan dihapus ' + idUser)
-  } else {
-    console.log('yaudah gak jadi')
-  }
-
-
-
-}
 </script>
 <template>
   <div class="main-data bg-white shadow-2xl m-1 p-2 py-3 rounded-lg">
@@ -80,14 +70,10 @@ async function deleteDatauser(idUser) {
             <td class="py-5">{{ index + 1 }}</td>
             <td class="py-5">{{ user.name }}</td>
             <td class="py-5">{{ user.division }}</td>
-            <td class="flex items-center py-5 justify-start">
+            <td class="flex items-center py-5 justify-center">
               <button class="flex bg-blue-400 text-white p-2 rounded-sm cursor-pointer mx-2"
                 @click="getDataDetailUser(user.id)">
                 Detail
-              </button>
-              <button class="flex bg-red-400 text-white p-2 rounded-sm cursor-pointer mx-2"
-                @click="deleteDatauser(user.id)">
-                Hapus
               </button>
             </td>
           </tr>

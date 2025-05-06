@@ -1,12 +1,15 @@
 <script setup>
-import { onMounted, watchEffect, watch, ref, computed } from 'vue'
+import { onMounted, ref, computed, getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import vSelect from "vue-select"
 import "vue-select/dist/vue-select.css"
 import axios from 'axios'
 
-// declaration variable of meta
+// declaration variable of import injection
 const readerPath = useRoute()
+const changeRoute = useRouter()
+const { appContext } = getCurrentInstance()
+const swal = appContext.config.globalProperties.$swal
 
 // declaration varible to this page
 const divisions = ref([])
@@ -19,11 +22,12 @@ const userId = readerPath.params.id
 const isCreate = userId ? false : true
 
 // declaration variable to 
-let divisionId = !isCreate ? computed(() => detailUsers.value?.division_id) : null
-const divisiUser = !isCreate ? computed(() => detailUsers.value?.division) : null
+const idUser = !isCreate ? computed(() => detailUsers.value?.id) : null
 const userName = !isCreate ? computed(() => detailUsers.value?.name) : null
 const email = !isCreate ? computed(() => detailUsers.value?.email) : null
 const motto = !isCreate ? computed(() => detailUsers.value?.motto) : null
+const divisiUser = !isCreate ? computed(() => detailUsers.value?.division) : null
+let divisionId = !isCreate ? computed(() => detailUsers.value?.division_id) : null
 
 let divisi = {
     id: divisionId,
@@ -32,6 +36,17 @@ let divisi = {
 
 // API base URL
 const api = import.meta.env.VITE_API_BASE_URL
+
+const showAlert = () => {
+    const { appContext } = getCurrentInstance()
+    const swal = appContext.config.globalProperties.$swal
+
+    swal.fire({
+        title: 'Sukses!',
+        text: 'Ini SweetAlert2 dari global instance!',
+        icon: 'success'
+    })
+}
 
 // lifecycle
 onMounted(async () => {
@@ -53,12 +68,37 @@ onMounted(async () => {
     }
 })
 
+
+
 function selectedDinas(selectedDinas) {
     divisi = selectedDinas.value
     const selectData = divisions.value.find((div) => div.value === selectedDinas.value)
     divisi = {
         label: selectData.label,
         value: selectData.value,
+    }
+}
+
+async function deleteDatauser(idUser) {
+    const result = await swal.fire({
+        title: 'Yakin mau hapus?',
+        text: 'Data ini tidak bisa dikembalikan!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    })
+
+    if (result.isConfirmed) {
+        try {
+            await axios.delete(`${api}/users/delete/${idUser}`)
+            await swal.fire('Berhasil!', 'Data berhasil dihapus.', 'success')
+            router.push('/users')
+        } catch (error) {
+            swal.fire('Error', 'Terjadi kesalahan saat menghapus data.', 'error')
+        }
+    } else {
+        swal.fire('Dibatalkan', 'Data tidak jadi dihapus.', 'info')
     }
 }
 
@@ -70,7 +110,7 @@ function selectedDinas(selectedDinas) {
             <div class="header-profil-user flex justify-between items-center">
                 <div class="username-header-profil-user flex items-center h-full">
                     <div
-                        class="icon-header-profil-user w-8 h-full border-1 border-gray-300 rounded-sm flex items-center justify-center text-gray-400">
+                        class="icon-header-profil-user w-8 h-full border-1 border-gray-300 rounded-sm flex items-center justify-center text-gray-400 ">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -82,7 +122,8 @@ function selectedDinas(selectedDinas) {
                     </div>
                 </div>
                 <div class="delete-account-header-profil-user  h-full">
-                    <button class="bg-red-400 text-white p-2 rounded-lg flex items-center">
+                    <button class="bg-red-400 text-white p-2 rounded-lg flex items-center cursor-pointer"
+                        @click="deleteDatauser(idUser)">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
