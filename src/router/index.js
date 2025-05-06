@@ -22,16 +22,21 @@ const routes = [
         }
       },
       {
-        path: 'divisi',
-        name: 'divisi info',
-        component: () => import('@/views/users/home-user.vue'),
+        path: 'edit/:id',
+        name: 'user edit',
+        component: () => import('@/views/users/edit-user.vue'),
         meta : {
-          title: 'Divisions',
-          navigation: 'Dashboard',
-          tableName: 'List Divisi'
+          title: 'User Edit',
+          navigation: 'Edit',
+          tableName: ''
         }
       }
     ],
+  },
+  {
+    path: "/divisi",
+    name: "divisi",
+        component: () => import('@/views/users/home-user.vue'),
   }
 ];
 

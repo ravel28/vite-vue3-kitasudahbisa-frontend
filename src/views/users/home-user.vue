@@ -1,37 +1,57 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios'
 
 // declaration variable of meta
-const route = useRoute()
+const readerPath = useRoute()
+const cahngeRoute = useRouter()
 const pageTitle = computed(() => route.meta.title);
 const listName = computed(() => route.meta.tableName);
 
 //Get data from API
+const api = import.meta.env.VITE_API_BASE_URL;
 
+// declaration varible to this page
 const users = ref([])
+const detailUsers = ref([])
 const take = 10;
 const fakeCountUsers = 10;
 
 onMounted(async () => {
   try {
-    const response = await axios.get(import.meta.env.VITE_API_BASE_URL + '/users/' + take)
+    const response = await axios.get(api + '/users/' + take)
     users.value = response.data.data.item
-    console.log(users.value);
   } catch (error) {
     console.error('API error:', error)
   }
 })
+
+async function getDataDetailUser(idUser) {
+  const getDetailUser = await axios.get(api + '/users/finding/' + idUser)
+  detailUsers.value = getDetailUser.data.data.item
+  cahngeRoute.push(`/users/edit/${idUser}`)
+}
+
+async function deleteDatauser(idUser) {
+  if (confirm('Apakah kamu yakin mau menghapus data ini?')) {
+    console.log('data yang akan dihapus ' + idUser)
+  } else {
+    console.log('yaudah gak jadi')
+  }
+
+
+
+}
 </script>
 <template>
   <div class="main-data bg-white shadow-2xl m-1 p-2 py-3 rounded-lg">
-    <div class="tool-table flex justify-between">
+    <div class="tool-table flex justify-between items-center">
       <div class="tool-table-search w-65">
         <input type="search" class="p-2 border border-gray-300 w-full rounded-xl focus:outline-none"
           placeholder="Search 🔎" />
       </div>
-      <div class="tool-table-create-item mx-3 ">
+      <div class="tool-table-create-item mx-3">
         <button class="w-30 flex text-sm text-white p-2 bg-blue-400 rounded-2xl cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6">
@@ -61,10 +81,12 @@ onMounted(async () => {
             <td class="py-5">{{ user.name }}</td>
             <td class="py-5">{{ user.division }}</td>
             <td class="flex items-center py-5 justify-start">
-              <button class="flex bg-blue-400 text-white p-2 rounded-sm cursor-pointer mx-2">
+              <button class="flex bg-blue-400 text-white p-2 rounded-sm cursor-pointer mx-2"
+                @click="getDataDetailUser(user.id)">
                 Detail
               </button>
-              <button class="flex bg-red-400 text-white p-2 rounded-sm cursor-pointer mx-2">
+              <button class="flex bg-red-400 text-white p-2 rounded-sm cursor-pointer mx-2"
+                @click="deleteDatauser(user.id)">
                 Hapus
               </button>
             </td>
