@@ -19,15 +19,16 @@ const take = 10
 
 // declaration varible reader path
 const userId = readerPath.params.id
-const isCreate = userId ? false : true
 
 // declaration variable to 
-const idUser = !isCreate ? computed(() => detailUsers.value?.id) : null
-const userName = !isCreate ? computed(() => detailUsers.value?.name) : null
-const email = !isCreate ? computed(() => detailUsers.value?.email) : null
-const motto = !isCreate ? computed(() => detailUsers.value?.motto) : null
-const divisiUser = !isCreate ? computed(() => detailUsers.value?.division) : null
-let divisionId = !isCreate ? computed(() => detailUsers.value?.division_id) : null
+const idUser = computed(() => detailUsers.value?.id);
+const userName = computed(() => detailUsers.value?.username);
+const name = computed(() => detailUsers.value?.name);
+const email = computed(() => detailUsers.value?.email);
+const motto = computed(() => detailUsers.value?.motto);
+const birthDate = computed(() => detailUsers.value?.birthdate);
+const divisiUser = computed(() => detailUsers.value?.division_name);
+let divisionId = computed(() => detailUsers.value?.division_id);
 
 let divisi = {
     id: divisionId,
@@ -36,17 +37,6 @@ let divisi = {
 
 // API base URL
 const api = import.meta.env.VITE_API_BASE_URL
-
-const showAlert = () => {
-    const { appContext } = getCurrentInstance()
-    const swal = appContext.config.globalProperties.$swal
-
-    swal.fire({
-        title: 'Sukses!',
-        text: 'Ini SweetAlert2 dari global instance!',
-        icon: 'success'
-    })
-}
 
 // lifecycle
 onMounted(async () => {
@@ -105,8 +95,8 @@ async function deleteDatauser(idUser) {
 </script>
 
 <template>
-    <div class="main-data bg-white shadow-2xl m-1 p-2 py-3 rounded-lg h-full mb-4">
-        <div class="profil-user block w-full h-14">
+    <div class="main-data flex justify-center w-full max-h-screen m-1 p-3 py-6 mb-4 overflow-auto">
+        <div class="profil-user block bg-white w-full sm:w-5xl h-full shadow-2xl p-5 rounded-lg">
             <div class="header-profil-user flex justify-between items-center">
                 <div class="username-header-profil-user flex items-center h-full">
                     <div
@@ -135,7 +125,7 @@ async function deleteDatauser(idUser) {
                 </div>
             </div>
             <div class="body-profil-user h-auto p-3 2xl:flex block">
-                <div class="foto-body-profil-user 2xl:w-md w-full">
+                <div class="foto-body-profil-user px-5 mx-4 2xl:w-md w-full">
                     <div
                         class="picture-foto-body-user w-full h-100 flex justify-center items-center text-blue-300 p-2 ">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -196,15 +186,26 @@ async function deleteDatauser(idUser) {
                 </div>
                 <div class="info-body-profil-user w-full p-2 mt-8 2xl:mt-0">
                     <form action="">
-                        <div class="grid mb-6 md:grid-cols-2 gap-8">
+                        <div class="grid mb-6 gap-8">
                             <div>
                                 <label for="" class="block mb-2">Divisi</label>
                                 <div class="select relative block">
                                     <v-select :options="divisions" placeholder="-- Pilih divisi --"
                                         v-model="divisionUserSelect" @update:modelValue="selectedDinas" />
                                 </div>
-
                             </div>
+                        </div>
+
+                        <div class="grid mb-6 gap-8">
+                            <div>
+                                <label for="" class="block mb-2">Tanggal Lahir</label>
+                                <input type="date"
+                                    class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
+                                    placeholder="yaya09@gmail.com" :value="birthDate ?? ''">
+                            </div>
+                        </div>
+
+                        <div class="grid mb-6 gap-8">
                             <div>
                                 <label for="" class="block mb-2">Email</label>
                                 <input type="email"
@@ -219,11 +220,11 @@ async function deleteDatauser(idUser) {
                                 <div class="select relative block">
                                     <input type="text"
                                         class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
-                                        placeholder="Jajang  Maulana" :value="userName ?? ''">
+                                        placeholder="Jajang  Maulana" :value="name ?? ''">
                                 </div>
                             </div>
                         </div>
-                        <div class="grid mb-6 gap-8">
+                        <div class="grid mb-10 gap-8">
                             <div>
                                 <label for="" class="block mb-2">Motto</label>
                                 <div class="select relative block">

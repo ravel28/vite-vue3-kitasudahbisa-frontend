@@ -10,7 +10,6 @@ const formLogin = ref({
 const emit = defineEmits(['submit'])
 
 const login = async () => {
-    console.table(formLogin.value);
     try {
         const response = await axios.post(import.meta.env.VITE_API_BASE_URL + '/users/login', formLogin.value)
     } catch (error) {

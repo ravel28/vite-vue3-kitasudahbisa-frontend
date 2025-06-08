@@ -1,5 +1,5 @@
 <script setup>
-import { watchEffect, computed } from 'vue'; // <-- dari Vue, bukan vue-router
+import { watchEffect, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -11,42 +11,50 @@ const isActive = (path) => {
 const title = computed(() => route.meta.title);
 
 watchEffect(() => {
-    if (title.value) {
-        document.title = title.value;
-    }
+    document.title = title.value;
+    console.log('cakjcak');
+
 });
+
 </script>
-
-
 
 <template>
     <title>{{ title }}</title>
-    <div class="side-bar-user">
+    <div class="side-bar-user text-sm">
         <ul class="">
             <li class="font-bold text-2xl flex items-center">
                 <h1 class="dancing-script-regular text-2xl p-2 py-6">KitaSudahBisa.com</h1>
             </li>
             <li
                 :class="[isActive('/users') ? 'bg-blue-500 text-white rounded-lg' : 'text-gray-700 hover:bg-gray-300 hover:rounded-lg']">
-                <router-link to="/users" class='flex p-4 '>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path
-                            d="M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z" />
-                        <path
-                            d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
+                <router-link to="/users" class='flex p-4 items-center'>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                     </svg>
                     <p class='mx-2'>Home</p>
                 </router-link>
             </li>
             <li
-                :class="[isActive('/users/divisi') ? 'bg-blue-500 text-white rounded-lg' : 'text-gray-700 hover:bg-gray-300 hover:rounded-lg']">
-                <router-link to="/users" class='flex p-4'>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                         <path fill-rule="evenodd"
-                            d="M7.5 5.25a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0 1 12 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.7 2.476-2.917A48.814 48.814 0 0 1 7.5 5.455V5.25Zm7.5 0v.09a49.488 49.488 0 0 0-6 0v-.09a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5Zm-3 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-                            clip-rule="evenodd" />
-                        <path
-                            d="M3 18.4v-2.796a4.3 4.3 0 0 0 .713.31A26.226 26.226 0 0 0 12 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 0 1-6.477-.427C4.047 21.128 3 19.852 3 18.4Z" />
+                :class="[isActive('/users/list') ? 'bg-blue-500 text-white rounded-lg' : 'text-gray-700 hover:bg-gray-300 hover:rounded-lg']">
+                <router-link to="/users/list" class='flex p-4 items-center'>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                    </svg>
+
+                    <p class='mx-2'>User</p>
+                </router-link>
+            </li>
+            <li
+                :class="[isActive('/divisi/list') ? 'bg-blue-500 text-white rounded-lg' : 'text-gray-700 hover:bg-gray-300 hover:rounded-lg']">
+                <router-link to="/divisi/list" class='flex p-4 items-center'>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
                     </svg>
                     <p class='mx-2'>Division</p>
                 </router-link>
@@ -67,14 +75,6 @@ watchEffect(() => {
     font-weight: 400;
     font-optical-sizing: auto;
     font-style: normal;
-    font-size: 30px;
-}
-
-/* Kelas untuk font dengan berat 700 (bold) */
-.dancing-script-bold {
-    font-family: "Dancing Script", cursive;
-    font-weight: 700;
-    font-optical-sizing: auto;
-    font-style: normal;
+    font-size: 25px;
 }
 </style>

@@ -4,20 +4,30 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('@/views/HomePage.vue')
+    component: () => import('@/views/login.vue')
   },
   {
-    path: '/users',
+    path: '/users/',
     name: 'Users',
     component: () => import('@/layouts/user-layout.vue'),
     children: [
       {
         path: '',
-        name: 'user info',
+        name: 'Dashboard',
         component: () => import('@/views/users/home-user.vue'),
         meta : {
           title: 'Dashboard',
           navigation: 'Dashboard',
+          tableName: 'Home'
+        }
+      },
+      {
+        path: 'list',
+        name: 'user info',
+        component: () => import('@/views/users/table-user.vue'),
+        meta : {
+          title: 'List User',
+          navigation: 'List User',
           tableName: 'List User'
         }
       },
@@ -36,7 +46,19 @@ const routes = [
   {
     path: "/divisi",
     name: "divisi",
-        component: () => import('@/views/users/home-user.vue'),
+    component: () => import('@/layouts/user-layout.vue'),
+    children: [
+      {
+        path: 'list',
+        name: 'divisi info',
+        component: () => import('@/views/divisions/table-divisi.vue'),
+        meta : {
+          title: 'List divisi',
+          navigation: 'List Divisi',
+          tableName: 'List Divisi'
+        }
+      },
+    ]
   }
 ];
 
