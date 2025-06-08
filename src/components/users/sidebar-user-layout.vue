@@ -12,7 +12,6 @@ const title = computed(() => route.meta.title);
 
 watchEffect(() => {
     document.title = title.value;
-    console.log('cakjcak');
 
 });
 

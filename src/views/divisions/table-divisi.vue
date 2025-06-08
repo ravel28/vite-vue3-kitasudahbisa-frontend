@@ -86,11 +86,11 @@ async function createdData() {
       resetForm();
       getData();
     }
+    emit('submit', { ...formDivisi.value })
   } catch (error) {
     console.error('Created user failed:', error)
+    emit('submit', { error, success: false })
   }
-  emit('submit', { ...formDivisi.value })
-
 }
 
 async function redButtonEventeClickOnCard() {

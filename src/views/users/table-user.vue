@@ -98,16 +98,17 @@ function valueFormUser() {
   formUser.value.motto = formUser.value.motto;
 }
 
-const createdUser = async () => {
+async function createdUser() {
   try {
     valueFormUser();
     await axios.post(import.meta.env.VITE_API_BASE_URL + '/users/create/', formUser.value)
     resetFormUser();
     getDataUsers();
+    emit('submit', { ...formUser.value })
   } catch (error) {
     console.error('Created user failed:', error)
+    emit('submit', { error, success: false })
   }
-  emit('submit', { ...formUser.value })
 }
 
 </script>
@@ -162,7 +163,7 @@ const createdUser = async () => {
   </div>
   <div
     class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-7 z-20 w-300 min-h-lg bg-white rounded-2xl shadow-2xl"
-    v-if="isCreate" @submit.prevent="createdUser">
+    v-if="isCreate">
     <div class="header-card flex items-center justify-between py-2">
       <h1 class=" flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -182,7 +183,7 @@ const createdUser = async () => {
       </div>
     </div>
 
-    <form action="">
+    <form action="" @submit.prevent="createdUser">
       <div class="body-card flex my-4">
         <div class="photo w-60">
           <div class="preview-photo h-70 w-full mb-12 border-1 border-gray-300 rounded-sm ">

@@ -9,12 +9,14 @@ import axios from 'axios'
 const readerPath = useRoute()
 const changeRoute = useRouter()
 const { appContext } = getCurrentInstance()
+const emit = defineEmits(['submit'])
 const swal = appContext.config.globalProperties.$swal
 
 // declaration varible to this page
-const divisions = ref([])
+const divisionsOptionSelect = ref([])
 const divisionUserSelect = ref([])
 const detailUsers = ref([])
+const idDivisi = ref([])
 const take = 10
 
 // declaration varible reader path
@@ -23,17 +25,19 @@ const userId = readerPath.params.id
 // declaration variable to 
 const idUser = computed(() => detailUsers.value?.id);
 const userName = computed(() => detailUsers.value?.username);
-const name = computed(() => detailUsers.value?.name);
-const email = computed(() => detailUsers.value?.email);
-const motto = computed(() => detailUsers.value?.motto);
-const birthDate = computed(() => detailUsers.value?.birthdate);
-const divisiUser = computed(() => detailUsers.value?.division_name);
-let divisionId = computed(() => detailUsers.value?.division_id);
 
-let divisi = {
-    id: divisionId,
-    label: divisiUser
-}
+const formUpdateInfoOfUser = ref({
+    name: null,
+    email: null,
+    birthdate: null,
+    motto: null,
+    division_id: null
+});
+
+
+const formUpdateAuthOfUser = ref({
+    username: null,
+});
 
 // API base URL
 const api = import.meta.env.VITE_API_BASE_URL
@@ -43,29 +47,69 @@ onMounted(async () => {
     try {
         const responseGetDivisi = await axios.get(`${api}/divisions/${take}`)
 
-        divisions.value = responseGetDivisi.data.data.item.map(div => ({
+        divisionsOptionSelect.value = responseGetDivisi.data.data.item.map(div => ({
             label: div.division,
             value: div.id
         }))
 
-        divisionUserSelect.value = divisi
-
-
-        const getDetailUser = await axios.get(api + '/users/finding/' + userId)
-        detailUsers.value = getDetailUser.data.data.item
+        detailUser();
     } catch (error) {
         console.error('API error:', error)
     }
 })
 
+async function detailUser() {
+    const getDetailUser = await axios.get(api + '/users/finding/' + userId);
+    valueformUsernameUser(getDetailUser);
+    valueformInfoUser(getDetailUser);
+}
 
 
-function selectedDinas(selectedDinas) {
-    divisi = selectedDinas.value
-    const selectData = divisions.value.find((div) => div.value === selectedDinas.value)
-    divisi = {
-        label: selectData.label,
-        value: selectData.value,
+function valueformInfoUser(detailUser) {
+    const personalUser = detailUser.data.data.item;
+    divisionUserSelect.value = {
+        id: personalUser.division_id,
+        label: personalUser.division_name
+    }
+
+    formUpdateInfoOfUser.value.division_id = personalUser.division_id;
+    formUpdateInfoOfUser.value.birthdate = personalUser.birthdate;
+    formUpdateInfoOfUser.value.username = personalUser.username;
+    formUpdateInfoOfUser.value.name = personalUser.name;
+    formUpdateInfoOfUser.value.motto = personalUser.motto;
+    formUpdateInfoOfUser.value.email = personalUser.email;
+    formUpdateInfoOfUser.value.motto = personalUser.motto;
+}
+
+function valueformUsernameUser(detailUser) {
+    const personalUser = detailUser.data.data.item;
+
+    formUpdateAuthOfUser.value.username = personalUser.username;
+}
+
+function selectedDinasToFormUpdateDivisionOfUser(selectedDinas) {
+    formUpdateInfoOfUser.value.division_id = selectedDinas.value;
+}
+
+
+async function updateData() {
+    try {
+        await axios.put(`${api}/users/update/${userId}`, formUpdateInfoOfUser.value)
+        await swal.fire('Mantap bre!', 'Data berhasil diupdate.', 'success')
+        detailUser();
+        emit('submit', { ...formUpdateInfoOfUser.value })
+    } catch (error) {
+        console.error('Failed to tupdate user : ', error)
+        emit('submit', { error, success: false })
+    }
+}
+
+async function updateDataAuth() {
+    try {
+        emit('submit', { ...formUpdateAuthOfUser.value })
+    } catch (error) {
+        console.error('Failed to tupdate user : ', error)
+        emit('submit', { error, success: false })
     }
 }
 
@@ -140,7 +184,7 @@ async function deleteDatauser(idUser) {
                         </button>
                     </div>
                     <div class="auth-action-foto-body w-full mt-4">
-                        <form action="" class="w-full block">
+                        <form action="" class="w-full block" @submit.prevent="updateDataAuth">
                             <div class="relative mb-3 w-full min-h-10 ">
                                 <div class="icon-input absolute left-0 py-2 px-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -152,7 +196,7 @@ async function deleteDatauser(idUser) {
                                 <div class="text-input w-full h-10 ">
                                     <input type="text" placeholder="Your Username"
                                         class="block w-full ps-8 p-2 focus:outline-0 border-1 border-gray-300"
-                                        :value="userName ?? ''">
+                                        v-model="formUpdateAuthOfUser.username">
                                 </div>
                             </div>
                             <div class="relative mb-5 w-full min-h-10 hidden ">
@@ -185,13 +229,14 @@ async function deleteDatauser(idUser) {
                     </div>
                 </div>
                 <div class="info-body-profil-user w-full p-2 mt-8 2xl:mt-0">
-                    <form action="">
+                    <form action="" @submit.prevent="updateData">
                         <div class="grid mb-6 gap-8">
                             <div>
                                 <label for="" class="block mb-2">Divisi</label>
                                 <div class="select relative block">
-                                    <v-select :options="divisions" placeholder="-- Pilih divisi --"
-                                        v-model="divisionUserSelect" @update:modelValue="selectedDinas" />
+                                    <v-select :options="divisionsOptionSelect" placeholder="-- Pilih divisi --"
+                                        v-model="divisionUserSelect"
+                                        @update:modelValue="selectedDinasToFormUpdateDivisionOfUser" />
                                 </div>
                             </div>
                         </div>
@@ -201,7 +246,7 @@ async function deleteDatauser(idUser) {
                                 <label for="" class="block mb-2">Tanggal Lahir</label>
                                 <input type="date"
                                     class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
-                                    placeholder="yaya09@gmail.com" :value="birthDate ?? ''">
+                                    placeholder="yaya09@gmail.com" v-model="formUpdateInfoOfUser.birthdate">
                             </div>
                         </div>
 
@@ -210,7 +255,7 @@ async function deleteDatauser(idUser) {
                                 <label for="" class="block mb-2">Email</label>
                                 <input type="email"
                                     class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
-                                    placeholder="yaya09@gmail.com" :value="email ?? ''">
+                                    placeholder="yaya09@gmail.com" v-model="formUpdateInfoOfUser.email">
                             </div>
                         </div>
 
@@ -220,7 +265,7 @@ async function deleteDatauser(idUser) {
                                 <div class="select relative block">
                                     <input type="text"
                                         class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
-                                        placeholder="Jajang  Maulana" :value="name ?? ''">
+                                        placeholder="Jajang  Maulana" v-model="formUpdateInfoOfUser.name">
                                 </div>
                             </div>
                         </div>
@@ -230,7 +275,7 @@ async function deleteDatauser(idUser) {
                                 <div class="select relative block">
                                     <input type="text"
                                         class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
-                                        placeholder="Terus kedepan" :value="motto ?? ''">
+                                        placeholder="Terus kedepan" v-model="formUpdateInfoOfUser.motto">
                                 </div>
                             </div>
                         </div>
