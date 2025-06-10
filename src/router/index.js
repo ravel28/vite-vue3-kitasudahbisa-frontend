@@ -7,9 +7,12 @@ const routes = [
     component: () => import('@/views/login.vue')
   },
   {
-    path: '/users/',
-    name: 'Users',
+    path: '/dashboard/',
+    name: 'Dasboard',
     component: () => import('@/layouts/user-layout.vue'),
+    meta: {
+      navigation : 'Dashboard'
+    },
     children: [
       {
         path: '',
@@ -18,9 +21,19 @@ const routes = [
         meta : {
           title: 'Dashboard',
           navigation: 'Dashboard',
-          tableName: 'Home'
+          tableName: ''
         }
-      },
+      }
+    ]
+  },
+  {
+    path: '/users/',
+    name: 'Users',
+    component: () => import('@/layouts/user-layout.vue'),
+    meta: {
+      navigation : 'Users'
+    },
+    children: [
       {
         path: 'list',
         name: 'user info',

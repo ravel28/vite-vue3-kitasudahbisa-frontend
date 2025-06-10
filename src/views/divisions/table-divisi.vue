@@ -1,12 +1,14 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, getCurrentInstance } from 'vue';
 import { useRouter } from 'vue-router';
 import vSelect from "vue-select"
 import 'vue-select/dist/vue-select.css'
 import axios from 'axios'
 
 // declaration variable of meta
-const api = import.meta.env.VITE_API_BASE_URL;
+const api = import.meta.env.VITE_API_BASE_URL
+const { appContext } = getCurrentInstance()
+const swal = appContext.config.globalProperties.$swal
 const changeRoute = useRouter()
 const emit = defineEmits(['submit'])
 const take = 10;
@@ -35,6 +37,7 @@ onMounted(async () => {
       value: div.id
     }))
   } catch (error) {
+    await swal.fire('Server Error', 'Unable to connect to the server. Please check your internet connection or try again later.', 'error');
     console.error('API error:', error)
   }
 })
@@ -44,6 +47,8 @@ function togleCardCreateData(isShow, isCreateData) {
   titleCardCreateUpdate.value = isCreateData ? 'Penambahan Divisi Baru' : 'Perubahan Nama Divisi';
   redButtonCardCreateUpdate.value = isCreateData ? 'Reset' : 'Hapus';
   isUpdateButtonOnCardCreateUpdate.value = isCreateData ? false : true;
+  if (isCreateData)
+    resetForm();
 }
 
 async function getDataDetail(id, divisiName) {
@@ -78,11 +83,13 @@ async function createdData() {
       formDivisi.value.division_id = idDivisi.value;
       formDivisi.value.division = formDivisi.value.division;
       await axios.put(import.meta.env.VITE_API_BASE_URL + '/divisions/update/' + idDivisi.value, formDivisi.value);
+      await swal.fire('Changes Saved', 'Your changes have been saved successfully.', 'success');
       isShowCardCreateUpdate.value = false;
       getData();
     } else {
       valueForm();
       await axios.post(import.meta.env.VITE_API_BASE_URL + '/divisions/create', formDivisi.value)
+      await swal.fire('Creation Successful', 'The data has been created successfully.', 'success');
       resetForm();
       getData();
     }
@@ -99,9 +106,27 @@ async function redButtonEventeClickOnCard() {
 }
 
 async function deleteData() {
-  await axios.delete(import.meta.env.VITE_API_BASE_URL + '/divisions/delete/' + idDivisi.value);
-  isShowCardCreateUpdate.value = false;
-  getData();
+  const result = await swal.fire({
+    title: 'Are you sure?',
+    text: 'This action cannot be undone!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  });
+
+
+  if (result.isConfirmed) {
+    try {
+      await axios.delete(import.meta.env.VITE_API_BASE_URL + '/divisions/delete/' + idDivisi.value);
+      isShowCardCreateUpdate.value = false;
+      getData();
+    } catch (error) {
+      swal.fire('Error', 'Terjadi kesalahan saat menghapus data.', 'error')
+    }
+  } else {
+    await swal.fire('Deletion Cancelled', 'The item was not deleted.', 'info');
+  }
 }
 
 </script>

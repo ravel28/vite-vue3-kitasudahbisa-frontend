@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
+
 const isActive = (path) => {
     return route.path === path;
 };
@@ -12,7 +13,6 @@ const title = computed(() => route.meta.title);
 
 watchEffect(() => {
     document.title = title.value;
-
 });
 
 </script>
@@ -25,8 +25,8 @@ watchEffect(() => {
                 <h1 class="dancing-script-regular text-2xl p-2 py-6">KitaSudahBisa.com</h1>
             </li>
             <li
-                :class="[isActive('/users') ? 'bg-blue-500 text-white rounded-lg' : 'text-gray-700 hover:bg-gray-300 hover:rounded-lg']">
-                <router-link to="/users" class='flex p-4 items-center'>
+                :class="[isActive('/dashboard') ? 'bg-blue-500 text-white rounded-lg' : 'text-gray-700 hover:bg-gray-300 hover:rounded-lg']">
+                <router-link to="/dashboard" class='flex p-4 items-center'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"

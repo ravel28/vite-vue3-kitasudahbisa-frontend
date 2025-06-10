@@ -53,6 +53,7 @@ onMounted(async () => {
       value: div.id
     }))
   } catch (error) {
+    await swal.fire('Server Error', 'Unable to connect to the server. Please check your internet connection or try again later.', 'error');
     console.error('API error:', error)
   }
 })
