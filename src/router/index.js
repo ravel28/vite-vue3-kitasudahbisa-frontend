@@ -36,7 +36,7 @@ const routes = [
     children: [
       {
         path: 'list',
-        name: 'user info',
+        name: 'User Info',
         component: () => import('@/views/users/table-user.vue'),
         meta : {
           title: 'List User',
@@ -55,6 +55,26 @@ const routes = [
         }
       }
     ],
+  },
+  {
+    path: '/positions/',
+    name: 'Position',
+    component: () => import('@/layouts/user-layout.vue'),
+    meta: {
+      navigation : 'Position'
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'Position Info',
+        component: () => import('@/views/positions/table-position.vue'),
+        meta : {
+          title: 'List Position',
+          navigation: 'List Position',
+          tableName: 'position'
+        }
+      }
+    ]
   },
   {
     path: "/divisi",

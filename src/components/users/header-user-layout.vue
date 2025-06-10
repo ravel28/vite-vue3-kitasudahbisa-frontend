@@ -6,6 +6,14 @@ const route = useRoute()
 
 const pathSegments = computed(() => route.path.split('/').filter(Boolean))
 
+const matched = route.matched;
+const parentMeta = matched.length > 1 ? matched[matched.length - 2].meta : null;
+const currentMeta = matched[matched.length - 1].meta;
+
+// console.log('Meta Induk:', parentMeta);
+// console.log('Meta Anak:', currentMeta);
+// console.log('Meta Anak title:', currentMeta.title);
+
 const navigation = computed(() => {
     const segments = pathSegments.value
     const first = segments[0] ? `${segments[0]}` : ''
@@ -17,7 +25,11 @@ const navigation = computed(() => {
 
 <template>
     <div class="w-full flex items-center justify-between">
-        <p class="text-gray-400 px-2">{{ navigation }}</p>
+        <!-- <div class="navigation">
+            <route-link>
+                {{ parentMeta.title }}
+            </route-link>
+        </div> -->
         <div class="profil flex bg-blue-600 text-white w-60 mx-8 p-3 rounded-2xl shadow-2xl">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6">
