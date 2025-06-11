@@ -91,7 +91,7 @@ async function redButtonEventeClickOnCard() {
 
 async function deleteData() {
   const result = await swal.fire({
-    title: 'Are you sure?',
+    title: 'Are you sure bajingan?',
     text: 'This action cannot be undone!',
     icon: 'warning',
     showCancelButton: true,
@@ -102,8 +102,15 @@ async function deleteData() {
 
   if (result.isConfirmed) {
     try {
-      await axios.delete(import.meta.env.VITE_API_BASE_URL + '/divisions/delete/' + idDivisi.value);
+      await axios.delete(import.meta.env.VITE_API_BASE_URL + '/position/delete/' + formPosition.value.idPosition);
       isShowCardCreateUpdate.value = false;
+      swal.fire({
+        title: 'Data Deleted!',
+        text: 'The data has been successfully removed from the system.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
       getData();
     } catch (error) {
       swal.fire('Error', 'Terjadi kesalahan saat menghapus data.', 'error')
@@ -149,7 +156,7 @@ async function deleteData() {
           <tr v-for="(position, index) in positionList" :key="position.id" class="py-3">
             <td class="py-5">{{ index + 1 }}</td>
             <td class="py-5">{{ position.position }}</td>
-            <td class="py-5"> NaN </td>
+            <td class="py-5">{{ position.total_user }}</td>
             <td class="flex items-center py-5 justify-center">
               <button class="flex bg-blue-400 text-white p-2 rounded-sm cursor-pointer mx-2"
                 @click="getDataDetail(position.id, position.position, position.level)">

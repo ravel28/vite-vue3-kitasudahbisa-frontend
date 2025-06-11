@@ -15,12 +15,13 @@ const take = 10;
 const users = ref([])
 const detailUsers = ref([])
 const imagePreview = ref(null)
-const divisions = ref([])
-const divisionsId = ref([])
+const divisionList = ref([])
+const positionList = ref([])
 const isCreate = ref(false)
 const formUser = ref({
   imagePreview: null,
   division_id: null,
+  position_id: null,
   birthdate: null,
   username: null,
   name: null,
@@ -47,11 +48,19 @@ onMounted(async () => {
   try {
     getDataUsers();
     const responseGetDivisi = await axios.get(`${api}/divisions/${take}`)
+    const responseGetPosition = await axios.get(`${api}/positions/${take}`)
 
-    divisions.value = responseGetDivisi.data.data.item.map(div => ({
+    divisionList.value = responseGetDivisi.data.data.item.map(div => ({
       label: div.division,
       value: div.id
     }))
+
+
+    positionList.value = responseGetPosition.data.data.item.map(div => ({
+      label: div.position,
+      value: div.id
+    }))
+
   } catch (error) {
     await swal.fire('Server Error', 'Unable to connect to the server. Please check your internet connection or try again later.', 'error');
     console.error('API error:', error)
@@ -59,18 +68,21 @@ onMounted(async () => {
 })
 
 async function getDataDetailUser(idUser) {
-  const getDetailUser = await axios.get(api + '/users/finding/' + idUser)
-  detailUsers.value = getDetailUser.data.data.item
+  // const getDetailUser = await axios.get(api + '/users/finding/' + idUser)
+  // detailUsers.value = getDetailUser.data.data.item
   changeRoute.push(`/users/edit/${idUser}`)
 }
-
 
 function togleCardCreateUser(isShow) {
   isCreate.value = isShow === true ? true : false;
 }
 
 function selectedDivisiAtCreateUser(divisionLabel) {
-  divisionsId.value = divisionLabel.value;
+  formUser.value.division_id = divisionLabel.value;
+}
+
+function selectedPositionAtCreateUser(divisionLabel) {
+  formUser.value.position_id = divisionLabel.value;
 }
 
 async function getDataUsers() {
@@ -79,7 +91,6 @@ async function getDataUsers() {
 }
 
 function resetFormUser() {
-  divisionsId.value = null;
   formUser.value.division_id = null;
   formUser.value.imagePreview = null;
   formUser.value.birthdate = null;
@@ -90,18 +101,12 @@ function resetFormUser() {
 }
 
 function valueFormUser() {
-  formUser.value.division_id = divisionsId.value;
   formUser.value.imagePreview = null;
-  formUser.value.birthdate = formUser.value.birthdate;
-  formUser.value.username = formUser.value.username;
-  formUser.value.name = formUser.value.name;
-  formUser.value.email = formUser.value.email;
-  formUser.value.motto = formUser.value.motto;
 }
 
 async function createdUser() {
   try {
-    valueFormUser();
+    console.log(formUser.value);
     await axios.post(import.meta.env.VITE_API_BASE_URL + '/users/create/', formUser.value)
     resetFormUser();
     getDataUsers();
@@ -139,17 +144,17 @@ async function createdUser() {
         <thead class=" border-b-1">
           <tr>
             <th class="w-15 py-4">No.</th>
-            <th>Email</th>
             <th>Nama lengkap</th>
             <th>Posisi</th>
+            <th>Divisi</th>
             <th class="w-60">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(user, index) in users" :key="user.id" class="py-3">
             <td class="py-5">{{ index + 1 }}</td>
-            <td class="py-5">{{ user.email }}</td>
             <td class="py-5">{{ user.name }}</td>
+            <td class="py-5">{{ user.position_name }}</td>
             <td class="py-5">{{ user.division_name }}</td>
             <td class="flex items-center py-5 justify-center">
               <button class="flex bg-blue-400 text-white p-2 rounded-sm cursor-pointer mx-2"
@@ -200,15 +205,16 @@ async function createdUser() {
             <div>
               <label for="" class="block mb-2">Divisi</label>
               <div class="select relative block">
-                <v-select :options="divisions" placeholder="-- Pilih divisi --" class="p-1"
-                  v-model="formUser.division_id"
-                  @update:modelValue="selectedDivisiAtCreateUser(formUser.division_id)" />
+                <v-select :options="divisionList" placeholder="-- Pilih divisi --" class="p-1"
+                  @update:modelValue="selectedDivisiAtCreateUser" />
               </div>
             </div>
             <div>
-              <label for="" class="block mb-2">Tanggal Lahir</label>
-              <input type="date" class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
-                placeholder="ravel" v-model="formUser.birthdate">
+              <label for="" class="block mb-2">Posisi</label>
+              <div class="select relative block">
+                <v-select :options="positionList" placeholder="-- Pilih divisi --" class="p-1"
+                  @update:modelValue="selectedPositionAtCreateUser" />
+              </div>
             </div>
           </div>
 
@@ -221,14 +227,19 @@ async function createdUser() {
               </div>
             </div>
             <div>
+              <label for="" class="block mb-2">Tanggal Lahir</label>
+              <input type="date" class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
+                placeholder="ravel" v-model="formUser.birthdate">
+            </div>
+          </div>
+          <div class="grid mb-6 gap-8 md:grid-cols-2">
+            <div>
               <label for="" class="block mb-2">Username</label>
               <div class="select relative block">
                 <input type="text" class="w-full p-2 border-gray-400 border-1 focus:outline-0 rounded-sm"
                   placeholder="Joki98" v-model="formUser.username">
               </div>
             </div>
-          </div>
-          <div class="grid mb-6 gap-8">
             <div>
               <label for="" class="block mb-2">Nama Lengkap</label>
               <div class="select relative block">

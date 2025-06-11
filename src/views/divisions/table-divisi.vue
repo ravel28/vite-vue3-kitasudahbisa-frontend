@@ -120,6 +120,13 @@ async function deleteData() {
     try {
       await axios.delete(import.meta.env.VITE_API_BASE_URL + '/divisions/delete/' + idDivisi.value);
       isShowCardCreateUpdate.value = false;
+      swal.fire({
+        title: 'Data Deleted!',
+        text: 'The data has been successfully removed from the system.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
       getData();
     } catch (error) {
       swal.fire('Error', 'Terjadi kesalahan saat menghapus data.', 'error')
