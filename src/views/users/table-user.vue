@@ -106,7 +106,6 @@ function valueFormUser() {
 
 async function createdUser() {
   try {
-    console.log(formUser.value);
     await axios.post(import.meta.env.VITE_API_BASE_URL + '/users/create/', formUser.value)
     resetFormUser();
     getDataUsers();
