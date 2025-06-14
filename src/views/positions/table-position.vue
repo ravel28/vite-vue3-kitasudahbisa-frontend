@@ -1,7 +1,6 @@
 <script setup>
-import { computed, onMounted, ref, getCurrentInstance } from 'vue';
+import { onMounted, ref, getCurrentInstance } from 'vue';
 import { useRouter } from 'vue-router';
-import vSelect from "vue-select"
 import 'vue-select/dist/vue-select.css'
 import axios from 'axios'
 
@@ -153,7 +152,7 @@ async function deleteData() {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(position, index) in positionList" :key="position.id" class="py-3">
+          <tr v-for="(position, index) in positionList" :key="position.id" class="py-3" v-if="positionList.length">
             <td class="py-5">{{ index + 1 }}</td>
             <td class="py-5">{{ position.position }}</td>
             <td class="py-5">{{ position.total_user }}</td>
@@ -163,6 +162,9 @@ async function deleteData() {
                 Detail
               </button>
             </td>
+          </tr>
+          <tr v-else>
+            <td colspan="4" class="text-center py-5 text-gray-500"> Data is null </td>
           </tr>
         </tbody>
       </table>

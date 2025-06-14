@@ -1,23 +1,35 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref, getCurrentInstance } from 'vue';
+import { useRouter } from 'vue-router';
 import vSelect from "vue-select"
 import 'vue-select/dist/vue-select.css'
 import axios from 'axios'
 
 // declaration variable of meta
 const api = import.meta.env.VITE_API_BASE_URL;
+const { appContext } = getCurrentInstance();
+const swal = appContext.config.globalProperties.$swal;
 const changeRoute = useRouter()
 const emit = defineEmits(['submit'])
 const take = 10;
 
 // declaration varible to this page
+const isLoadingDataTable = ref(true)
+const isLoadingUpdateUser = ref(false)
 const users = ref([])
-const detailUsers = ref([])
+const meta = ref([])
 const imagePreview = ref(null)
 const divisionList = ref([])
 const positionList = ref([])
 const isCreate = ref(false)
+const pages = ref([])
+const pagination = ref({
+  current_page: 0,
+  take: 0,
+  total_pages: 0,
+  item_per_page: 0,
+  total_items: 0,
+})
 const formUser = ref({
   imagePreview: null,
   division_id: null,
@@ -55,26 +67,36 @@ onMounted(async () => {
       value: div.id
     }))
 
-
     positionList.value = responseGetPosition.data.data.item.map(div => ({
       label: div.position,
       value: div.id
     }))
 
+    pagesToShow();
+    isLoadingDataTable.value = false;
   } catch (error) {
     await swal.fire('Server Error', 'Unable to connect to the server. Please check your internet connection or try again later.', 'error');
     console.error('API error:', error)
   }
 })
 
-async function getDataDetailUser(idUser) {
-  // const getDetailUser = await axios.get(api + '/users/finding/' + idUser)
-  // detailUsers.value = getDetailUser.data.data.item
-  changeRoute.push(`/users/edit/${idUser}`)
+function pagesToShow() {
+  const pageList = []
+  const start = pagination.value.current_page
+
+  for (let i = start; i <= 3; i++) {
+    pageList.push(i)
+  }
+
+  pages.value = pageList;
 }
 
 function togleCardCreateUser(isShow) {
   isCreate.value = isShow === true ? true : false;
+}
+
+function togleButtonSaveData() {
+  isLoadingUpdateUser.value = !isLoadingUpdateUser.value;
 }
 
 function selectedDivisiAtCreateUser(divisionLabel) {
@@ -88,6 +110,13 @@ function selectedPositionAtCreateUser(divisionLabel) {
 async function getDataUsers() {
   const response = await axios.get(api + '/users/' + take)
   users.value = response.data.data.item
+  meta.value = response.data.meta
+
+  pagination.value.current_page = meta.value.current_page
+  pagination.value.take = meta.value.take
+  pagination.value.total_pages = meta.value.total_pages
+  pagination.value.item_per_page = meta.value.item_per_page
+  pagination.value.total_items = meta.value.total_items
 }
 
 function resetFormUser() {
@@ -100,13 +129,16 @@ function resetFormUser() {
   formUser.value.motto = null;
 }
 
-function valueFormUser() {
-  formUser.value.imagePreview = null;
+async function getDataDetailUser(idUser) {
+  changeRoute.push(`/users/edit/${idUser}`)
 }
 
 async function createdUser() {
   try {
+    togleButtonSaveData();
     await axios.post(import.meta.env.VITE_API_BASE_URL + '/users/create/', formUser.value)
+    togleButtonSaveData();
+    await swal.fire('Creation Successful', 'The data has been created successfully.', 'success');
     resetFormUser();
     getDataUsers();
     emit('submit', { ...formUser.value })
@@ -135,7 +167,7 @@ async function createdUser() {
           placeholder="Search 🔎" />
       </div>
     </div>
-    <div class="main-table mt-5">
+    <div class="main-table mt-5 px-5">
       <div class="tool-table">
 
       </div>
@@ -144,17 +176,17 @@ async function createdUser() {
           <tr>
             <th class="w-15 py-4">No.</th>
             <th>Nama lengkap</th>
-            <th>Posisi</th>
             <th>Divisi</th>
+            <th>Posisi</th>
             <th class="w-60">Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) in users" :key="user.id" class="py-3">
+          <tr v-for="(user, index) in users" :key="user.id" class="py-3" v-if="users.length > 0 && !isLoadingDataTable">
             <td class="py-5">{{ index + 1 }}</td>
             <td class="py-5">{{ user.name }}</td>
-            <td class="py-5">{{ user.position_name }}</td>
             <td class="py-5">{{ user.division_name }}</td>
+            <td class="py-5">{{ user.position_name }}</td>
             <td class="flex items-center py-5 justify-center">
               <button class="flex bg-blue-400 text-white p-2 rounded-sm cursor-pointer mx-2"
                 @click="getDataDetailUser(user.id)">
@@ -162,8 +194,61 @@ async function createdUser() {
               </button>
             </td>
           </tr>
+          <tr v-else-if="isLoadingDataTable">
+            <td colspan="5" class="text-center py-5 text-gray-500">
+              <div role="status" class="flex justify-center items-center w-full">
+                <svg aria-hidden="true" class="w-4 h-4 me-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                  viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor" />
+                  <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill" />
+                </svg>
+                <span>Loading...</span>
+              </div>
+            </td>
+          </tr>
+          <tr v-else>
+            <td colspan="5" class="text-center py-5 text-gray-500">
+              Data is null.
+            </td>
+          </tr>
         </tbody>
       </table>
+      <div class="pagination-table w-full flex justify-between items-center" v-if="!isLoadingDataTable">
+        <div class="flex flex-col items-center">
+          <span class="text-sm text-gray-700 ">
+            Showing <span class="font-semibold text-gray-900 ">{{ pagination.current_page }}</span> to <span
+              class="font-semibold text-gray-900 ">{{ pagination.take }}</span> of <span
+              class="font-semibold text-gray-900 ">{{
+                pagination.total_pages }}</span>
+            Entries
+          </span>
+        </div>
+        <nav aria-label="Page navigation example">
+          <ul class="inline-flex -space-x-px text-base h-10">
+            <li>
+              <a href="#"
+                class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 ">Previous</a>
+            </li>
+          </ul>
+          <ul class="inline-flex -space-x-px text-base h-10" v-for="n in pages" :key="n">
+            <li>
+              <a href="#"
+                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">{{
+                  n }}</a>
+            </li>
+          </ul>
+          <ul class="inline-flex -space-x-px text-base h-10">
+            <li>
+              <a href="#"
+                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 ">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
   <div
@@ -268,12 +353,26 @@ async function createdUser() {
             </svg>
             <p class="px-2"> Reset</p>
           </button>
-          <button type="submit" class="bg-blue-600 text-white flex w-40 justify-center p-2 rounded-lg cursor-pointer">
+          <button type="submit" class="bg-blue-600 text-white flex w-40 justify-center p-2 rounded-lg cursor-pointer"
+            v-if="!isLoadingUpdateUser">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="size-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            <p class="px-2">Simpan</p>
+            <p class="px-2" v-if="!isLoadingUpdateUser">Simpan</p>
+          </button>
+          <button type="submit" class="flex justify-center bg-blue-600 text-white w-40 p-2 rounded-lg cursor-pointer"
+            v-if="isLoadingUpdateUser">
+            <svg aria-hidden="true" class="w-4 h-4 me-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+              viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor" />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill" />
+            </svg>
+            <span>Loading...</span>
           </button>
         </div>
       </div>

@@ -168,7 +168,7 @@ async function deleteData() {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(divisi, index) in divisionsList" :key="divisi.id" class="py-3">
+          <tr v-for="(divisi, index) in divisionsList" :key="divisi.id" class="py-3" v-if="divisionsList.length">
             <td class="py-5">{{ index + 1 }}</td>
             <td class="py-5">{{ divisi.division }}</td>
             <td class="flex items-center py-5 justify-center">
@@ -177,6 +177,9 @@ async function deleteData() {
                 Detail
               </button>
             </td>
+          </tr>
+          <tr v-else>
+            <td colspan="3" class="text-center py-5 text-gray-500"> Data is null </td>
           </tr>
         </tbody>
       </table>
