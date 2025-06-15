@@ -11,24 +11,33 @@ const { appContext } = getCurrentInstance();
 const swal = appContext.config.globalProperties.$swal;
 const changeRoute = useRouter()
 const emit = defineEmits(['submit'])
-const take = 10;
 
 // declaration varible to this page
 const isLoadingDataTable = ref(true)
 const isLoadingUpdateUser = ref(false)
 const users = ref([])
 const meta = ref([])
+const isPrev = ref(false)
+const isNext = ref(false)
 const imagePreview = ref(null)
 const divisionList = ref([])
 const positionList = ref([])
 const isCreate = ref(false)
 const pages = ref([])
+const filterDataUsers = ref({
+  take: 10,
+  page: 1,
+  name: null,
+  divisi: null,
+  position: null
+})
 const pagination = ref({
   current_page: 0,
   take: 0,
   total_pages: 0,
   item_per_page: 0,
   total_items: 0,
+  start_index: 0,
 })
 const formUser = ref({
   imagePreview: null,
@@ -59,8 +68,8 @@ function onFileChange(event) {
 onMounted(async () => {
   try {
     getDataUsers();
-    const responseGetDivisi = await axios.get(`${api}/divisions/${take}`)
-    const responseGetPosition = await axios.get(`${api}/positions/${take}`)
+    const responseGetDivisi = await axios.get(`${api}/divisions/10`)
+    const responseGetPosition = await axios.get(`${api}/positions/10`)
 
     divisionList.value = responseGetDivisi.data.data.item.map(div => ({
       label: div.division,
@@ -72,23 +81,55 @@ onMounted(async () => {
       value: div.id
     }))
 
-    pagesToShow();
     isLoadingDataTable.value = false;
   } catch (error) {
     await swal.fire('Server Error', 'Unable to connect to the server. Please check your internet connection or try again later.', 'error');
+    isLoadingDataTable.value = false;
     console.error('API error:', error)
   }
 })
 
 function pagesToShow() {
   const pageList = []
-  const start = pagination.value.current_page
+  const currentPage = pagination.value.current_page
+  let start = currentPage - ((currentPage - 1) % 3);
 
-  for (let i = start; i <= 3; i++) {
-    pageList.push(i)
+  for (let i = 1; i <= 3; i++) {
+    if (start <= pagination.value.total_pages)
+      pageList.push(start)
+    start++
+  }
+
+  if (
+    pagination.value.current_page > 1
+  ) {
+    isPrev.value = true;
+  } else {
+    isPrev.value = false;
+  }
+
+  if (
+    pagination.value.current_page < pagination.value.total_pages
+  ) {
+    isNext.value = true;
+  } else {
+    isNext.value = false;
   }
 
   pages.value = pageList;
+}
+
+async function requestPage(pageNumber) {
+  filterDataUsers.value.page = pageNumber
+  getDataUsers()
+}
+
+async function nextPrev(isNext) {
+  if (isNext)
+    filterDataUsers.value.page += 1
+  if (!isNext)
+    filterDataUsers.value.page -= 1
+  getDataUsers()
 }
 
 function togleCardCreateUser(isShow) {
@@ -108,7 +149,11 @@ function selectedPositionAtCreateUser(divisionLabel) {
 }
 
 async function getDataUsers() {
-  const response = await axios.get(api + '/users/' + take)
+  const response = await axios.get(api + '/users/' + filterDataUsers.value.take, {
+    params: {
+      page: filterDataUsers.value.page
+    }
+  })
   users.value = response.data.data.item
   meta.value = response.data.meta
 
@@ -117,6 +162,10 @@ async function getDataUsers() {
   pagination.value.total_pages = meta.value.total_pages
   pagination.value.item_per_page = meta.value.item_per_page
   pagination.value.total_items = meta.value.total_items
+  pagination.value.start_index = (pagination.value.current_page - 1) * pagination.value.take
+
+
+  pagesToShow();
 }
 
 function resetFormUser() {
@@ -183,7 +232,7 @@ async function createdUser() {
         </thead>
         <tbody>
           <tr v-for="(user, index) in users" :key="user.id" class="py-3" v-if="users.length > 0 && !isLoadingDataTable">
-            <td class="py-5">{{ index + 1 }}</td>
+            <td class="py-5">{{ pagination.start_index + index + 1 }}</td>
             <td class="py-5">{{ user.name }}</td>
             <td class="py-5">{{ user.division_name }}</td>
             <td class="py-5">{{ user.position_name }}</td>
@@ -220,29 +269,29 @@ async function createdUser() {
       <div class="pagination-table w-full flex justify-between items-center" v-if="!isLoadingDataTable">
         <div class="flex flex-col items-center">
           <span class="text-sm text-gray-700 ">
-            Showing <span class="font-semibold text-gray-900 ">{{ pagination.current_page }}</span> to <span
-              class="font-semibold text-gray-900 ">{{ pagination.take }}</span> of <span
-              class="font-semibold text-gray-900 ">{{
-                pagination.total_pages }}</span>
+            Showing <span class="font-semibold text-gray-900 ">{{ pagination.start_index + 1 }}</span> to <span
+              class="font-semibold text-gray-900 ">{{ pagination.start_index + pagination.item_per_page }}</span> of
+            <span class="font-semibold text-gray-900 ">{{
+              pagination.total_items }}</span>
             Entries
           </span>
         </div>
         <nav aria-label="Page navigation example">
-          <ul class="inline-flex -space-x-px text-base h-10">
-            <li>
+          <ul class="inline-flex -space-x-px text-base h-10" v-if="isPrev">
+            <li @click="nextPrev(false)">
               <a href="#"
                 class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 ">Previous</a>
             </li>
           </ul>
           <ul class="inline-flex -space-x-px text-base h-10" v-for="n in pages" :key="n">
-            <li>
+            <li @click="requestPage(n)">
               <a href="#"
                 class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">{{
                   n }}</a>
             </li>
           </ul>
-          <ul class="inline-flex -space-x-px text-base h-10">
-            <li>
+          <ul class="inline-flex -space-x-px text-base h-10" v-if="isNext">
+            <li @click="nextPrev(true)">
               <a href="#"
                 class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 ">Next</a>
             </li>
