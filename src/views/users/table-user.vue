@@ -157,13 +157,12 @@ async function getDataUsers() {
   users.value = response.data.data.item
   meta.value = response.data.meta
 
-  pagination.value.current_page = meta.value.current_page
+  pagination.value.current_page = Number(meta.value.current_page)
   pagination.value.take = meta.value.take
   pagination.value.total_pages = meta.value.total_pages
   pagination.value.item_per_page = meta.value.item_per_page
   pagination.value.total_items = meta.value.total_items
   pagination.value.start_index = (pagination.value.current_page - 1) * pagination.value.take
-
 
   pagesToShow();
 }
@@ -280,20 +279,22 @@ async function createdUser() {
           <ul class="inline-flex -space-x-px text-base h-10" v-if="isPrev">
             <li @click="nextPrev(false)">
               <a href="#"
-                class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 ">Previous</a>
+                class="flex items-center justify-center px-4 h-10 ms-0 leading-tight bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 ">
+                << Previous</a>
             </li>
           </ul>
           <ul class="inline-flex -space-x-px text-base h-10" v-for="n in pages" :key="n">
-            <li @click="requestPage(n)">
+            <li @click="requestPage(n)" :class="n === pagination.current_page ? 'text-black' : 'text-gray-400'">
               <a href="#"
-                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">{{
+                class="flex items-center justify-center px-4 h-10 leading-tight  bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">{{
                   n }}</a>
             </li>
           </ul>
           <ul class="inline-flex -space-x-px text-base h-10" v-if="isNext">
             <li @click="nextPrev(true)">
               <a href="#"
-                class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 ">Next</a>
+                class="flex items-center justify-center px-4 h-10 leading-tight  bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 ">Next
+                >></a>
             </li>
           </ul>
         </nav>
