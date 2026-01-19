@@ -149,19 +149,19 @@ function selectedPositionAtCreateUser(divisionLabel) {
 }
 
 async function getDataUsers() {
-  // const response = await axios.get(api + '/users/' + filterDataUsers.value.take, {
-  //   params: {
-  //     page: filterDataUsers.value.page
-  //   }
-  // })
-  // users.value = response.data.data.item
-  // meta.value = response.data.meta
-  const response = await axios.get(api)
-  console.log(response);
-  users.value = response.data.item
-  meta.value = response.data
+  const response = await axios.get(api + '/users/' + filterDataUsers.value.take, {
+    params: {
+      page: filterDataUsers.value.page
+    }
+  })
+  users.value = response.data.data.item
+  meta.value = response.data.meta
+  // const response = await axios.get(api + 'data')
+  // const response_meta = await axios.get(api + 'meta')
+  // users.value = response.data
+  // meta.value = response_meta.data
 
-  pagination.value.current_page = Number(meta.value.current_page)
+  pagination.value.current_page = meta.value.current_page
   pagination.value.take = meta.value.take
   pagination.value.total_pages = meta.value.total_pages
   pagination.value.item_per_page = meta.value.item_per_page
@@ -182,7 +182,15 @@ function resetFormUser() {
 }
 
 async function getDataDetailUser(idUser) {
-  changeRoute.push(`/users/edit/${idUser}`)
+  // changeRoute.push(`/users/edit/${idUser}`)
+  // "id": 5,
+  //   "email": "fifah06@gmail.com",
+  //     "username": "fifah06",
+
+  await axios.patch(`http://localhost:3000/data/5`, {
+    name: 'reza_ravelinno'
+  });
+  getDataUsers();
 }
 
 async function createdUser() {

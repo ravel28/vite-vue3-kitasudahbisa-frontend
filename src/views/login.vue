@@ -1,6 +1,11 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, getCurrentInstance } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
+
+const { appContext } = getCurrentInstance();
+const router = useRouter();
+const swal = appContext.config.globalProperties.$swal;
 
 const formLogin = ref({
     user: '',
@@ -11,9 +16,15 @@ const emit = defineEmits(['submit'])
 
 const login = async () => {
     try {
-        const response = await axios.post(import.meta.env.VITE_API_BASE_URL + '/users/login', formLogin.value)
+        const result = await axios.post(import.meta.env.VITE_API_BASE_URL + '/users/login', formLogin.value)
+        localStorage.setItem('users', result.data.data.item);
+        localStorage.setItem('isLogin', true);
+        localStorage.setItem('name', result.data.data.item.name);
+        await swal.fire('Login berhasil', 'Hallo selamat datang', 'success');
+        router.push('/dashboard');
     } catch (error) {
         console.error('Login failed:', error)
+        await swal.fire('Server Error', 'Terjadi kesalahan', 'error');
     }
     emit('submit', { ...formLogin.value })
 }
@@ -40,7 +51,7 @@ const login = async () => {
                             v-model="formLogin.password" />
                     </div>
                     <button type="submit"
-                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-3">Login</button>
+                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-3 cursor-pointer">Login</button>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-500">
                         Apakah anda lupa password ? <a href="#"
                             class="text-blue-700 hover:underline dark:text-blue-500">Hubungi Admin</a>

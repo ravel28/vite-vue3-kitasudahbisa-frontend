@@ -37,7 +37,7 @@ const routes = [
       {
         path: 'list',
         name: 'User Info',
-        component: () => import('@/views/users/table-user.vue'),
+        component: () => import('@/views/users/table-user-test.vue'),
         meta : {
           title: 'List User',
           navigation: 'List User',
